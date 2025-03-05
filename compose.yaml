@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  db:
+    image: postgres
+    restart: always
+    container_name: postgres_ebingo
+    environment:
+      POSTGRES_DB: ebingo
+      POSTGRES_USER: ebingo_user
+      POSTGRES_PASSWORD: ebingo123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
