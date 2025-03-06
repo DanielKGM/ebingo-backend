@@ -1,17 +1,14 @@
-version: "3.8"
 services:
-  db:
-    image: postgres
-    restart: always
-    container_name: postgres_ebingo
-    environment:
-      POSTGRES_DB: ebingo
-      POSTGRES_USER: ebingo_user
-      POSTGRES_PASSWORD: ebingo123
+  mysql:
+    image: mysql
     ports:
-      - "5432:5432"
+      - "3306:3306"
+    expose:
+      - "3306"
+    environment:
+      - MYSQL_USER=sql
+      - MYSQL_PASSWORD=sql
+      - MYSQL_DATABASE=sql
+      - MYSQL_ROOT_PASSWORD=sql
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
+      - "./conf.d:/etc/mysql/conf.d:ro"

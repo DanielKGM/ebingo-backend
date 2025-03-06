@@ -2,7 +2,13 @@ package br.danielkgm.ebingo.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.Set;
+
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import br.danielkgm.ebingo.enumm.Role;
 
@@ -12,7 +18,7 @@ import br.danielkgm.ebingo.enumm.Role;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -30,6 +36,20 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    @ManyToMany(mappedBy = "players")
-    private Set<Game> games;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (this.role == Role.ADMIN)
+            return List.of(new SimpleGrantedAuthority("ADMIN"), new SimpleGrantedAuthority("USER"));
+        else
+            return List.of(new SimpleGrantedAuthority("USER"));
+    }
+
+    @Override
+    public String getUsername() {
+        return getNickname();
+    }
+
+    // @ManyToMany(mappedBy = "players")
+    // private Set<Game> games;
+
 }
