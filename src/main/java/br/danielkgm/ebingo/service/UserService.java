@@ -18,13 +18,10 @@ public class UserService {
 
     public User updateUser(UserDTO userDTO, String token) {
         String nickname = tokenService.validateToken(token.replace("Bearer ", ""));
-        System.out.println("*************************" + nickname);
         User user = fetchUser(nickname);
 
-        if (nickname.equals(userDTO.nickname())) {
-            user.setNickname(userDTO.nickname());
-            userRepository.save(user);
-        }
+        user.setNickname(userDTO.nickname());
+        userRepository.save(user);
 
         return user;
     }
