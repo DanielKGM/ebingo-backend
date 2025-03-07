@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,7 @@ public class GameService {
     private final CardRepo cardRepository;
     private final TokenService tokenService;
     private final Random random = new Random();
+    private static final int DRAW_RANGE = 60;
 
     public GameService(GameRepo gameRepository, UserRepo userRepository, CardRepo cardRepository,
             TokenService tokenService) {
@@ -107,13 +110,26 @@ public class GameService {
     }
 
     public Game addDrawnNumber(String gameId) {
-        Game game = gameRepository.findById(gameId).orElseThrow(() -> new RuntimeException("Jogo não encontrado"));
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new RuntimeException("Jogo não encontrado"));
 
         if (game.getWinner() != null) {
             throw new RuntimeException("O jogo já tem um vencedor.");
         }
 
-        game.getDrawnNumbers().add(this.random.nextInt(60) + 1);
+        if (game.getDrawnNumbers().size() >= DRAW_RANGE) {
+            throw new RuntimeException("Todos os números já foram sorteados.");
+        }
+
+        Set<Integer> availableNumbers = IntStream.rangeClosed(1, DRAW_RANGE)
+                .boxed()
+                .collect(Collectors.toSet());
+        availableNumbers.removeAll(game.getDrawnNumbers());
+
+        List<Integer> availableList = new ArrayList<>(availableNumbers);
+        int drawnNumber = availableList.get(this.random.nextInt(availableList.size()));
+
+        game.getDrawnNumbers().add(drawnNumber);
         return gameRepository.save(game);
     }
 
@@ -125,7 +141,7 @@ public class GameService {
         }
 
         if (!game.getDrawnNumbers().contains(number)) {
-            throw new RuntimeException("O número não foi sorteado.");
+            throw new RuntimeException("O número %d não foi sorteado!".formatted(number));
         }
 
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
@@ -169,7 +185,7 @@ public class GameService {
     private List<Integer> generateCardNumbers(int size) {
         Set<Integer> numbers = new HashSet<>();
         while (numbers.size() < size) {
-            numbers.add(this.random.nextInt(60) + 1);
+            numbers.add(this.random.nextInt(DRAW_RANGE) + 1);
         }
         return new ArrayList<>(numbers);
     }
