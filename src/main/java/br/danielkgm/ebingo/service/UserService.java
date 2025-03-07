@@ -1,7 +1,5 @@
 package br.danielkgm.ebingo.service;
 
-import java.util.Optional;
-
 import org.springframework.stereotype.Service;
 
 import br.danielkgm.ebingo.dto.UserDTO;
@@ -20,9 +18,13 @@ public class UserService {
 
     public User updateUser(UserDTO userDTO, String token) {
         String nickname = tokenService.validateToken(token.replace("Bearer ", ""));
+        System.out.println("*************************" + nickname);
         User user = fetchUser(nickname);
-        user.setNickname(userDTO.nickname());
-        userRepository.save(user);
+
+        if (nickname.equals(userDTO.nickname())) {
+            user.setNickname(userDTO.nickname());
+            userRepository.save(user);
+        }
 
         return user;
     }
@@ -34,10 +36,7 @@ public class UserService {
     }
 
     private User fetchUser(String nickName) {
-        Optional<User> user = userRepository.findByNicknameOrderByNickname(nickName);
-        if (user.isEmpty()) {
-            new RuntimeException("Usuário não encontrado");
-        }
-        return user.get();
+        return userRepository.findByNicknameOrderByNickname(nickName)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
     }
 }

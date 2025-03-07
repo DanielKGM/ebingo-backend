@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+import br.danielkgm.ebingo.enumm.GameStatus;
+
 @Entity
 @Table(name = "games")
 @Getter
@@ -29,13 +31,24 @@ public class Game {
     @Column
     private String prize;
 
+    @Column
+    private Integer cardSize;
+
     @Column(nullable = false)
     private boolean manualFill;
 
     @ElementCollection
     private List<Integer> drawnNumbers;
 
+    @ManyToOne
+    @JoinColumn(name = "winner_id")
+    private User winner;
+
     @ManyToMany
     @JoinTable(name = "game_participation", joinColumns = @JoinColumn(name = "game_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> players;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private GameStatus status;
 }

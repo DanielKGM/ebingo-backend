@@ -48,8 +48,4 @@ public class User implements UserDetails {
     public String getUsername() {
         return getNickname();
     }
-
-    // @ManyToMany(mappedBy = "players")
-    // private Set<Game> games;
-
 }

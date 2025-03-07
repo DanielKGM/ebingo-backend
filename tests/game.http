@@ -1,0 +1,6 @@
+### Definir variáveis
+@baseUrl = http://localhost:8080
+
+### Registrar um novo usuário
+POST {{baseUrl}}/games/b84a85d8-14fb-4253-91aa-7eacbd6e980c/draw
+Content-Type: application/json

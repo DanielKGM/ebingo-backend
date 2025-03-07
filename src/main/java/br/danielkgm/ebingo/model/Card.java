@@ -2,6 +2,8 @@ package br.danielkgm.ebingo.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,5 +26,8 @@ public class Card {
     private User user;
 
     @ElementCollection
-    private List<Integer> numbers;
+    private List<Integer> numbers; // Números da cartela
+
+    @ElementCollection
+    private List<Integer> markedNumbers = new ArrayList<>(); // Números que foram marcados
 }
