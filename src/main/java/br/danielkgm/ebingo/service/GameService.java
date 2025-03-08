@@ -63,8 +63,11 @@ public class GameService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        return cardRepository.findByGameAndUser(game, user)
-                .orElseThrow(() -> new RuntimeException("Gere uma cartela para entrar no jogo"));
+        Optional<Card> card = cardRepository.findByGameAndUser(game, user);
+        if (card.isEmpty()) {
+            return new Card();
+        }
+        return card.get();
 
     }
 
@@ -90,9 +93,11 @@ public class GameService {
     }
 
     public Card joinGame(String gameId, String userId) {
-        Game game = gameRepository.findById(gameId).orElseThrow(() -> new RuntimeException("Jogo não encontrado"));
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
+        Game game = gameRepository.findById(gameId).orElseThrow(() -> new RuntimeException("Jogo não encontrado!"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
+        if (game.getPlayers().contains(user)) {
+            throw new RuntimeException("Você já está participando deste jogo!");
+        }
         // Gera os números da cartela
         List<Integer> cardNumbers = generateCardNumbers(game.getCardSize());
 
