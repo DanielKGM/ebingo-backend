@@ -1,6 +1,7 @@
 package br.danielkgm.ebingo.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +12,8 @@ import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
 
+import br.danielkgm.ebingo.dto.GameCardDTO;
+import br.danielkgm.ebingo.dto.GameFilterDTO;
 import br.danielkgm.ebingo.enumm.GameStatus;
 import br.danielkgm.ebingo.model.Card;
 import br.danielkgm.ebingo.model.Game;
@@ -49,12 +52,20 @@ public class GameService {
         return gameRepository.save(game);
     }
 
-    public List<Game> getAllGames() {
-        return gameRepository.findAll();
+    public List<GameCardDTO> getAllGames() {
+        return toGameCardList(gameRepository.findAll());
     }
 
-    public List<Game> getGamesByRoomNameAndStatus(String roomName, GameStatus status) {
-        return gameRepository.findByRoomNameContainingIgnoreCaseAndStatus(roomName, status);
+    public List<GameCardDTO> getGamesByFilter(GameFilterDTO filter) {
+        List<Game> games = gameRepository.findByFilter(filter);
+        return toGameCardList(games);
+    }
+
+    private List<GameCardDTO> toGameCardList(List<Game> games) {
+        if (games == null) {
+            return Collections.emptyList();
+        }
+        return games.stream().map(GameCardDTO::fromModel).toList();
     }
 
     public Card getUserCard(String gameId, String userId) {

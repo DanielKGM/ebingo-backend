@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.danielkgm.ebingo.enumm.GameStatus;
+import br.danielkgm.ebingo.dto.GameCardDTO;
+import br.danielkgm.ebingo.dto.GameFilterDTO;
 import br.danielkgm.ebingo.model.Card;
 import br.danielkgm.ebingo.model.Game;
 import br.danielkgm.ebingo.service.GameService;
@@ -36,35 +38,15 @@ public class GameController {
         return new ResponseEntity<>(createdGame, HttpStatus.CREATED);
     }
 
-    // Obter todos os jogos
-    @GetMapping
-    public ResponseEntity<List<Game>> getAllGames() {
-        List<Game> games = gameService.getAllGames();
-        return new ResponseEntity<>(games, HttpStatus.OK);
-    }
+    // Obter jogos filtrados
+    @GetMapping("")
+    public ResponseEntity<List<GameCardDTO>> getGamesByFilter(@ModelAttribute GameFilterDTO filter) {
 
-    // Obter jogos filtrados por nome da sala e status
-    @GetMapping("/filter")
-    public ResponseEntity<List<Game>> getGamesByRoomNameAndStatus(
-            @RequestParam(required = false) String roomName,
-            @RequestParam(required = false) GameStatus status) {
-
-        if (roomName != null && status != null) {
-            List<Game> games = gameService.getGamesByRoomNameAndStatus(roomName, status);
-            return new ResponseEntity<>(games, HttpStatus.OK);
+        if (filter == null) {
+            return new ResponseEntity<>(gameService.getAllGames(), HttpStatus.OK);
         }
 
-        if (roomName != null) {
-            List<Game> games = gameService.getGamesByRoomNameAndStatus(roomName, null);
-            return new ResponseEntity<>(games, HttpStatus.OK);
-        }
-
-        if (status != null) {
-            List<Game> games = gameService.getGamesByRoomNameAndStatus(null, status);
-            return new ResponseEntity<>(games, HttpStatus.OK);
-        }
-
-        return new ResponseEntity<>(gameService.getAllGames(), HttpStatus.OK);
+        return new ResponseEntity<>(gameService.getGamesByFilter(filter), HttpStatus.OK);
     }
 
     // Atualizar um jogo (somente ADMIN pode editar)

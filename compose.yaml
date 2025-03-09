@@ -6,9 +6,12 @@ services:
     expose:
       - "3306"
     environment:
+      - TZ=America/Sao_Paulo
       - MYSQL_USER=sql
       - MYSQL_PASSWORD=sql
       - MYSQL_DATABASE=sql
       - MYSQL_ROOT_PASSWORD=sql
     volumes:
       - "./conf.d:/etc/mysql/conf.d:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/timezone:/etc/timezone:ro"
