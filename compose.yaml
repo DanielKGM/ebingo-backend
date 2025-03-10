@@ -1,11 +1,13 @@
 services:
+  # Serviço do MySQL
   mysql:
-    image: mysql
+    image: mysql:8.0
+    container_name: banco-de-dados
     ports:
       - "3306:3306"
-    expose:
-      - "3306"
     environment:
+      - MYSQL_HOST=banco-de-dados
+      - DB_PASSWORD=sql
       - TZ=America/Sao_Paulo
       - MYSQL_USER=sql
       - MYSQL_PASSWORD=sql
@@ -15,3 +17,38 @@ services:
       - "./conf.d:/etc/mysql/conf.d:ro"
       - "/etc/localtime:/etc/localtime:ro"
       - "/etc/timezone:/etc/timezone:ro"
+    networks:
+      - ebingo-net
+
+  # Serviço do backend (Spring Boot)
+  api:
+    build:
+      context: ./
+    container_name: api-backend
+    environment:
+      - MYSQL_HOST=mysql
+      - DB_PASSWORD=sql
+      - JWT_SECRET=chaveultrasecreta
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - ebingo-net
+
+  # Serviço do frontend (Angular)
+  frontend:
+    build:
+      context: ../ebingo-frontend
+    container_name: api-frontend
+    ports:
+      - "4200:4200"
+    depends_on:
+      - api
+    networks:
+      - ebingo-net
+
+networks:
+  ebingo-net:
+    driver: bridge
