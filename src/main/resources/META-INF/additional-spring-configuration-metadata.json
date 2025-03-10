@@ -4,6 +4,11 @@
       "name": "api.security.token.secret",
       "type": "java.lang.String",
       "description": "A description for 'api.security.token.secret'"
+    },
+    {
+      "name": "api.frontend.origin",
+      "type": "java.lang.String",
+      "description": "Application Frontend URL"
     }
   ]
 }

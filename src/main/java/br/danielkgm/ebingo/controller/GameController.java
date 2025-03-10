@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,14 +57,6 @@ public class GameController {
     public ResponseEntity<Game> updateGame(@PathVariable String id, @RequestBody Game gameDetails) {
         Game updatedGame = gameService.updateGame(id, gameDetails);
         return new ResponseEntity<>(updatedGame, HttpStatus.OK);
-    }
-
-    // Deletar um jogo (somente ADMIN pode deletar)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGame(@PathVariable String id) {
-        gameService.deleteGame(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     // Endpoint para buscar um jogo pelo ID

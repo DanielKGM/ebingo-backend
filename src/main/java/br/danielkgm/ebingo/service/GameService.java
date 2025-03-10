@@ -13,6 +13,7 @@ import java.util.stream.IntStream;
 import org.springframework.stereotype.Service;
 
 import br.danielkgm.ebingo.audit.GameAudit;
+import br.danielkgm.ebingo.controller.GameWebSocketController;
 import br.danielkgm.ebingo.dto.GameCardDTO;
 import br.danielkgm.ebingo.dto.GameFilterDTO;
 import br.danielkgm.ebingo.enumm.GameAction;
@@ -33,13 +34,15 @@ public class GameService {
     private final AuditService auditService;
     private final Random random = new Random();
     private static final int DRAW_RANGE = 60;
+    private final GameWebSocketController gameWebSocketController;
 
     public GameService(GameRepo gameRepository, UserRepo userRepository, CardRepo cardRepository,
-            AuditService auditService) {
+            AuditService auditService, GameWebSocketController gameWebSocketController) {
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
         this.cardRepository = cardRepository;
         this.auditService = auditService;
+        this.gameWebSocketController = gameWebSocketController;
     }
 
     public Game createGame(Game game) {
@@ -93,12 +96,13 @@ public class GameService {
         game.setStatus(gameDetails.getStatus());
         game.setCardSize(gameDetails.getCardSize());
         this.auditService.createGameAudit(game, GameAction.EDITED);
-        return gameRepository.save(game);
+        return saveAndSend(game);
     }
 
-    public void deleteGame(String id) {
-        Game game = gameRepository.findById(id).orElseThrow(() -> new RuntimeException("Jogo não encontrado"));
-        gameRepository.delete(game);
+    private Game saveAndSend(Game game) {
+        Game newGame = gameRepository.save(game);
+        gameWebSocketController.sendGameUpdate(newGame);
+        return newGame;
     }
 
     public Game getGameById(String id) {
@@ -121,7 +125,7 @@ public class GameService {
         this.auditService.createGameAudit(game, GameAction.PLAYER_JOINED);
         cardRepository.save(card);
         game.getPlayers().add(user);
-        gameRepository.save(game);
+        saveAndSend(game);
         return card;
     }
 
@@ -150,7 +154,7 @@ public class GameService {
             this.auditService.createGameAudit(game, GameAction.STARTED);
         }
         this.auditService.createGameAudit(game, GameAction.NUMBER_DRAWN);
-        return gameRepository.save(game);
+        return saveAndSend(game);
     }
 
     public List<Integer> markNumber(String gameId, String userId, int number) {
@@ -181,7 +185,7 @@ public class GameService {
         if (card.getMarkedNumbers().containsAll(card.getNumbers())) {
             game.setWinner(user);
             this.auditService.createGameAudit(game, GameAction.GAME_WON);
-            gameRepository.save(game);
+            saveAndSend(game);
         }
 
         return card.getMarkedNumbers();
