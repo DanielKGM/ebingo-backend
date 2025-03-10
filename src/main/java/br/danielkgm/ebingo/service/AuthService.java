@@ -29,8 +29,12 @@ public class AuthService implements UserDetailsService {
     public User register(UserDTO userDTO) {
         User user = UserDTO.toModel(userDTO);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
         return userRepository.save(user);
+    }
+
+    public User getUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return (User) auth.getPrincipal();
     }
 
     public Optional<User> login(String email, String password) {

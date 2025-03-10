@@ -1,6 +1,8 @@
 package br.danielkgm.ebingo.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +22,19 @@ import br.danielkgm.ebingo.dto.GameCardDTO;
 import br.danielkgm.ebingo.dto.GameFilterDTO;
 import br.danielkgm.ebingo.model.Card;
 import br.danielkgm.ebingo.model.Game;
+import br.danielkgm.ebingo.model.User;
+import br.danielkgm.ebingo.service.AuthService;
 import br.danielkgm.ebingo.service.GameService;
 
 @RestController
 @RequestMapping("/games")
 public class GameController {
     private final GameService gameService;
+    private final AuthService authService;
 
-    public GameController(GameService gameService) {
+    public GameController(GameService gameService, AuthService authService) {
         this.gameService = gameService;
+        this.authService = authService;
     }
 
     // Criar um novo jogo (somente ADMIN pode criar)
@@ -92,8 +98,12 @@ public class GameController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{gameId}/prize")
-    public ResponseEntity<String> getPrize(@PathVariable String gameId, @RequestParam String userId) {
-        return ResponseEntity.ok(gameService.getPrize(gameId, userId));
+    public ResponseEntity<Map<String, String>> getPrize(@PathVariable String gameId) {
+        User u = authService.getUser();
+        String id = u != null ? u.getId() : null;
+        Map<String, String> response = new HashMap<>();
+        response.put("prize", gameService.getPrize(gameId, id));
+        return ResponseEntity.ok(response);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")

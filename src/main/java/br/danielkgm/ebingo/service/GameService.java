@@ -200,7 +200,7 @@ public class GameService {
         }
 
         if (!game.getWinner().equals(user)) {
-            return "Você não é o vencedor.";
+            throw new RuntimeException("Você não é o vencedor deste jogo!");
         }
 
         this.auditService.createGameAudit(game, GameAction.PRIZE_VIEWED);
