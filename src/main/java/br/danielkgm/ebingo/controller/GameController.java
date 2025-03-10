@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.danielkgm.ebingo.audit.GameAudit;
 import br.danielkgm.ebingo.dto.GameCardDTO;
 import br.danielkgm.ebingo.dto.GameFilterDTO;
 import br.danielkgm.ebingo.model.Card;
@@ -31,7 +33,7 @@ public class GameController {
     }
 
     // Criar um novo jogo (somente ADMIN pode criar)
-    // @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<Game> createGame(@RequestBody Game game) {
         Game createdGame = gameService.createGame(game);
@@ -39,6 +41,7 @@ public class GameController {
     }
 
     // Obter jogos filtrados
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("")
     public ResponseEntity<List<GameCardDTO>> getGamesByFilter(@ModelAttribute GameFilterDTO filter) {
 
@@ -50,7 +53,7 @@ public class GameController {
     }
 
     // Atualizar um jogo (somente ADMIN pode editar)
-    // @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Game> updateGame(@PathVariable String id, @RequestBody Game gameDetails) {
         Game updatedGame = gameService.updateGame(id, gameDetails);
@@ -58,7 +61,7 @@ public class GameController {
     }
 
     // Deletar um jogo (somente ADMIN pode deletar)
-    // @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGame(@PathVariable String id) {
         gameService.deleteGame(id);
@@ -66,6 +69,7 @@ public class GameController {
     }
 
     // Endpoint para buscar um jogo pelo ID
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{id}")
     public ResponseEntity<Game> getGameById(@PathVariable String id) {
         Game game = gameService.getGameById(id);
@@ -76,31 +80,43 @@ public class GameController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/{gameId}/join")
     public ResponseEntity<Card> joinGame(@PathVariable String gameId, @RequestParam String userId) {
         return ResponseEntity.ok(gameService.joinGame(gameId, userId));
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/{gameId}/draw")
     public ResponseEntity<Game> drawNumber(@PathVariable String gameId) {
         return ResponseEntity.ok(gameService.addDrawnNumber(gameId));
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/{gameId}/mark")
     public ResponseEntity<List<Integer>> markNumber(@PathVariable String gameId, @RequestParam String userId,
             @RequestParam int number) {
         return ResponseEntity.ok(gameService.markNumber(gameId, userId, number));
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{gameId}/prize")
     public ResponseEntity<String> getPrize(@PathVariable String gameId, @RequestParam String userId) {
         return ResponseEntity.ok(gameService.getPrize(gameId, userId));
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{gameId}/{userId}")
     public ResponseEntity<Card> getUserCard(
             @PathVariable String gameId,
             @PathVariable String userId) {
         return ResponseEntity.ok(gameService.getUserCard(gameId, userId));
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("/{gameId}/audit")
+    public ResponseEntity<List<GameAudit>> auditGame(
+            @PathVariable String gameId) {
+        return ResponseEntity.ok(gameService.getAudits(gameId));
     }
 }

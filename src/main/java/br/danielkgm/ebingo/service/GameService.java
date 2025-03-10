@@ -12,8 +12,10 @@ import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
 
+import br.danielkgm.ebingo.audit.GameAudit;
 import br.danielkgm.ebingo.dto.GameCardDTO;
 import br.danielkgm.ebingo.dto.GameFilterDTO;
+import br.danielkgm.ebingo.enumm.GameAction;
 import br.danielkgm.ebingo.enumm.GameStatus;
 import br.danielkgm.ebingo.model.Card;
 import br.danielkgm.ebingo.model.Game;
@@ -28,28 +30,27 @@ public class GameService {
     private final GameRepo gameRepository;
     private final UserRepo userRepository;
     private final CardRepo cardRepository;
-    private final TokenService tokenService;
+    private final AuditService auditService;
     private final Random random = new Random();
     private static final int DRAW_RANGE = 60;
 
     public GameService(GameRepo gameRepository, UserRepo userRepository, CardRepo cardRepository,
-            TokenService tokenService) {
+            AuditService auditService) {
         this.gameRepository = gameRepository;
         this.userRepository = userRepository;
         this.cardRepository = cardRepository;
-        this.tokenService = tokenService;
-    }
-
-    public boolean isTokenFromUser(String token, String userId) {
-        String nickname = tokenService.validateToken(token);
-        Optional<User> foundUser = userRepository.findById(userId);
-        String foundNickname = foundUser.isPresent() ? foundUser.get().getNickname() : null;
-        return (foundNickname != null && foundNickname.equals(nickname));
+        this.auditService = auditService;
     }
 
     public Game createGame(Game game) {
         game.setStatus(GameStatus.NAO_INICIADO);
-        return gameRepository.save(game);
+        Game savedGame = gameRepository.save(game);
+        this.auditService.createGameAudit(savedGame, GameAction.CREATED);
+        return savedGame;
+    }
+
+    public List<GameAudit> getAudits(String uuid) {
+        return this.auditService.getAudit(this.gameRepository.findById(uuid).orElse(null));
     }
 
     public List<GameCardDTO> getAllGames() {
@@ -91,6 +92,7 @@ public class GameService {
         game.setManualFill(gameDetails.isManualFill());
         game.setStatus(gameDetails.getStatus());
         game.setCardSize(gameDetails.getCardSize());
+        this.auditService.createGameAudit(game, GameAction.EDITED);
         return gameRepository.save(game);
     }
 
@@ -116,12 +118,10 @@ public class GameService {
         card.setGame(game);
         card.setUser(user);
         card.setNumbers(cardNumbers);
-
+        this.auditService.createGameAudit(game, GameAction.PLAYER_JOINED);
         cardRepository.save(card);
-
         game.getPlayers().add(user);
         gameRepository.save(game);
-
         return card;
     }
 
@@ -146,6 +146,10 @@ public class GameService {
         int drawnNumber = availableList.get(this.random.nextInt(availableList.size()));
 
         game.getDrawnNumbers().add(drawnNumber);
+        if (game.getDrawnNumbers().size() == 1) {
+            this.auditService.createGameAudit(game, GameAction.STARTED);
+        }
+        this.auditService.createGameAudit(game, GameAction.NUMBER_DRAWN);
         return gameRepository.save(game);
     }
 
@@ -168,15 +172,15 @@ public class GameService {
             throw new RuntimeException("O número não está na cartela.");
         }
 
-        // Adiciona o número aos números marcados
         if (!card.getMarkedNumbers().contains(number)) {
             card.getMarkedNumbers().add(number);
+            this.auditService.createGameAudit(game, GameAction.NUMBER_MARKED);
             cardRepository.save(card);
         }
 
-        // Verificar se a cartela foi totalmente marcada -> vitória
         if (card.getMarkedNumbers().containsAll(card.getNumbers())) {
             game.setWinner(user);
+            this.auditService.createGameAudit(game, GameAction.GAME_WON);
             gameRepository.save(game);
         }
 
@@ -195,7 +199,9 @@ public class GameService {
             return "Você não é o vencedor.";
         }
 
-        return "Parabéns! Você ganhou: " + game.getPrize();
+        this.auditService.createGameAudit(game, GameAction.PRIZE_VIEWED);
+
+        return game.getPrize();
     }
 
     private List<Integer> generateCardNumbers(int size) {

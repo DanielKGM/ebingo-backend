@@ -1,5 +1,7 @@
 package br.danielkgm.ebingo.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,5 +41,15 @@ public class AuthController {
         User user = (User) auth.getPrincipal();
         var token = tokenService.generateToken(user);
         return ResponseEntity.ok(new LoginResDTO(token, UserDTO.fromModel(user)));
+    }
+
+    @GetMapping("/roles")
+    public ResponseEntity<List<String>> getRoles() {
+        return ResponseEntity.ok(authService.getAuthorities());
+    }
+
+    @GetMapping("")
+    public ResponseEntity<Boolean> isAuthenticated() {
+        return ResponseEntity.ok(authService.isAuthenticated());
     }
 }

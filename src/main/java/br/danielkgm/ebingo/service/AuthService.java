@@ -1,5 +1,11 @@
 package br.danielkgm.ebingo.service;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -9,8 +15,6 @@ import org.springframework.stereotype.Service;
 import br.danielkgm.ebingo.dto.UserDTO;
 import br.danielkgm.ebingo.model.User;
 import br.danielkgm.ebingo.repository.UserRepo;
-
-import java.util.Optional;
 
 @Service
 public class AuthService implements UserDetailsService {
@@ -32,6 +36,18 @@ public class AuthService implements UserDetailsService {
     public Optional<User> login(String email, String password) {
         return userRepository.findByEmail(email)
                 .filter(user -> passwordEncoder.matches(password, user.getPassword()));
+    }
+
+    public List<String> getAuthorities() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getAuthorities().stream()
+                .map(GrantedAuthority::toString)
+                .toList();
+    }
+
+    public boolean isAuthenticated() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.isAuthenticated();
     }
 
     @Override

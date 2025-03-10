@@ -3,8 +3,7 @@ package br.danielkgm.ebingo.enumm;
 public enum GameStatus {
     NAO_INICIADO("Não Iniciado"),
     INICIADO("Iniciado"),
-    ENCERRADO("Encerrado"),
-    CANCELADO("Cancelado");
+    ENCERRADO("Encerrado");
 
     private String value;
 
