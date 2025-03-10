@@ -1,39 +1,47 @@
+version: "3.8"
+
 services:
   # Serviço do MySQL
   mysql:
     image: mysql:8.0
     container_name: banco-de-dados
+    restart: always
     ports:
       - "3306:3306"
     environment:
-      - MYSQL_HOST=banco-de-dados
-      - DB_PASSWORD=sql
-      - TZ=America/Sao_Paulo
+      - MYSQL_ROOT_PASSWORD=sql
+      - MYSQL_DATABASE=sql
       - MYSQL_USER=sql
       - MYSQL_PASSWORD=sql
-      - MYSQL_DATABASE=sql
-      - MYSQL_ROOT_PASSWORD=sql
+      - TZ=America/Sao_Paulo
     volumes:
       - "./conf.d:/etc/mysql/conf.d:ro"
-      - "/etc/localtime:/etc/localtime:ro"
-      - "/etc/timezone:/etc/timezone:ro"
+      - "mysql_data:/var/lib/mysql"
     networks:
       - ebingo-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-psql"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
 
   # Serviço do backend (Spring Boot)
   api:
     build:
       context: ./
     container_name: api-backend
+    restart: always
     environment:
-      - MYSQL_HOST=mysql
-      - DB_PASSWORD=sql
-      - JWT_SECRET=chaveultrasecreta
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/sql
+      - SPRING_DATASOURCE_USERNAME=sql
+      - SPRING_DATASOURCE_PASSWORD=sql
       - SPRING_PROFILES_ACTIVE=docker
+      - JWT_SECRET=chaveultrasecreta
     ports:
       - "8080:8080"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     networks:
       - ebingo-net
 
@@ -42,6 +50,7 @@ services:
     build:
       context: ../ebingo-frontend
     container_name: api-frontend
+    restart: always
     ports:
       - "4200:4200"
     depends_on:
@@ -52,3 +61,7 @@ services:
 networks:
   ebingo-net:
     driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
