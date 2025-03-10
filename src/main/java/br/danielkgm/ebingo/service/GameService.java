@@ -1,5 +1,6 @@
 package br.danielkgm.ebingo.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -15,7 +16,9 @@ import org.springframework.stereotype.Service;
 import br.danielkgm.ebingo.audit.GameAudit;
 import br.danielkgm.ebingo.controller.GameWebSocketController;
 import br.danielkgm.ebingo.dto.GameCardDTO;
+import br.danielkgm.ebingo.dto.GameDTO;
 import br.danielkgm.ebingo.dto.GameFilterDTO;
+import br.danielkgm.ebingo.dto.RankingDTO;
 import br.danielkgm.ebingo.enumm.GameAction;
 import br.danielkgm.ebingo.enumm.GameStatus;
 import br.danielkgm.ebingo.model.Card;
@@ -45,11 +48,11 @@ public class GameService {
         this.gameWebSocketController = gameWebSocketController;
     }
 
-    public Game createGame(Game game) {
+    public GameDTO createGame(Game game) {
         game.setStatus(GameStatus.NAO_INICIADO);
         Game savedGame = gameRepository.save(game);
         this.auditService.createGameAudit(savedGame, GameAction.CREATED);
-        return savedGame;
+        return GameDTO.fromModel(savedGame);
     }
 
     public List<GameAudit> getAudits(String uuid) {
@@ -86,7 +89,7 @@ public class GameService {
 
     }
 
-    public Game updateGame(String id, Game gameDetails) {
+    public GameDTO updateGame(String id, Game gameDetails) {
         Game game = gameRepository.findById(id).orElseThrow(() -> new RuntimeException("Jogo não encontrado"));
         game.setRoomName(gameDetails.getRoomName());
         game.setStartTime(gameDetails.getStartTime());
@@ -96,17 +99,18 @@ public class GameService {
         game.setStatus(gameDetails.getStatus());
         game.setCardSize(gameDetails.getCardSize());
         this.auditService.createGameAudit(game, GameAction.EDITED);
-        return saveAndSend(game);
+        return updateAndSend(game);
     }
 
-    private Game saveAndSend(Game game) {
+    private GameDTO updateAndSend(Game game) {
         Game newGame = gameRepository.save(game);
         gameWebSocketController.sendGameUpdate(newGame);
-        return newGame;
+        return GameDTO.fromModel(newGame);
     }
 
-    public Game getGameById(String id) {
-        return gameRepository.findById(id).orElse(null);
+    public GameDTO getGameById(String id) {
+        var model = gameRepository.findById(id).orElse(null);
+        return GameDTO.fromModel(model);
     }
 
     public Card joinGame(String gameId, String userId) {
@@ -124,12 +128,13 @@ public class GameService {
         card.setNumbers(cardNumbers);
         this.auditService.createGameAudit(game, GameAction.PLAYER_JOINED);
         cardRepository.save(card);
+        this.gameWebSocketController.sendRankingUpdate(getRanking(game), gameId);
         game.getPlayers().add(user);
-        saveAndSend(game);
+        updateAndSend(game);
         return card;
     }
 
-    public Game addDrawnNumber(String gameId) {
+    public GameDTO addDrawnNumber(String gameId) {
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new RuntimeException("Jogo não encontrado"));
 
@@ -151,10 +156,11 @@ public class GameService {
 
         game.getDrawnNumbers().add(drawnNumber);
         if (game.getDrawnNumbers().size() == 1) {
+            game.setStatus(GameStatus.INICIADO);
             this.auditService.createGameAudit(game, GameAction.STARTED);
         }
         this.auditService.createGameAudit(game, GameAction.NUMBER_DRAWN);
-        return saveAndSend(game);
+        return updateAndSend(game);
     }
 
     public List<Integer> markNumber(String gameId, String userId, int number) {
@@ -178,17 +184,41 @@ public class GameService {
 
         if (!card.getMarkedNumbers().contains(number)) {
             card.getMarkedNumbers().add(number);
+            this.gameWebSocketController.sendRankingUpdate(getRanking(game), gameId);
             this.auditService.createGameAudit(game, GameAction.NUMBER_MARKED);
             cardRepository.save(card);
         }
 
         if (card.getMarkedNumbers().containsAll(card.getNumbers())) {
             game.setWinner(user);
+            game.setStatus(GameStatus.ENCERRADO);
+            game.setEndTime(LocalDateTime.now());
             this.auditService.createGameAudit(game, GameAction.GAME_WON);
-            saveAndSend(game);
+            updateAndSend(game);
         }
 
         return card.getMarkedNumbers();
+    }
+
+    public List<RankingDTO> getRanking(String gameId) {
+        var game = this.gameRepository.findById(gameId).orElse(null);
+        if (game == null) {
+            return Collections.emptyList();
+        }
+        return getRanking(game);
+    }
+
+    private List<RankingDTO> getRanking(Game game) {
+        if (game == null) {
+            return Collections.emptyList();
+        }
+        var cards = this.cardRepository.findByGame(game);
+        if (cards.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return cards.stream()
+                .map(c -> new RankingDTO(c.getUser().getId(), c.getUser().getNickname(), c.getMarkedNumbers().size()))
+                .toList();
     }
 
     public String getPrize(String gameId, String userId) {
@@ -200,7 +230,7 @@ public class GameService {
         }
 
         if (!game.getWinner().equals(user)) {
-            throw new RuntimeException("Você não é o vencedor deste jogo!");
+            return "Você não é o vencedor deste jogo!";
         }
 
         this.auditService.createGameAudit(game, GameAction.PRIZE_VIEWED);

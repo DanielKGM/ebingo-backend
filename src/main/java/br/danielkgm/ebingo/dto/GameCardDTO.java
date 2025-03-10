@@ -10,7 +10,7 @@ public record GameCardDTO(
         String roomName,
         LocalDateTime startTime,
         LocalDateTime endTime,
-        String prize,
+        Boolean prize,
         Integer cardSize,
         Integer players,
         boolean manualFill,
@@ -18,7 +18,8 @@ public record GameCardDTO(
 
     public static GameCardDTO fromModel(Game model) {
         Integer players = model.getPlayers() != null ? model.getPlayers().size() : null;
+        Boolean prize = model.getPrize() != null && !model.getPrize().isEmpty();
         return new GameCardDTO(model.getId(), model.getRoomName(), model.getStartTime(), model.getEndTime(),
-                model.getPrize(), model.getCardSize(), players, model.isManualFill(), model.getStatus());
+                prize, model.getCardSize(), players, model.isManualFill(), model.getStatus());
     }
 }

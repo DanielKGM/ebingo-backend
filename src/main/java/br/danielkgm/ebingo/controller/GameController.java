@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.danielkgm.ebingo.audit.GameAudit;
 import br.danielkgm.ebingo.dto.GameCardDTO;
+import br.danielkgm.ebingo.dto.GameDTO;
 import br.danielkgm.ebingo.dto.GameFilterDTO;
+import br.danielkgm.ebingo.dto.RankingDTO;
 import br.danielkgm.ebingo.model.Card;
 import br.danielkgm.ebingo.model.Game;
 import br.danielkgm.ebingo.model.User;
@@ -40,8 +42,8 @@ public class GameController {
     // Criar um novo jogo (somente ADMIN pode criar)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
-    public ResponseEntity<Game> createGame(@RequestBody Game game) {
-        Game createdGame = gameService.createGame(game);
+    public ResponseEntity<GameDTO> createGame(@RequestBody Game game) {
+        GameDTO createdGame = gameService.createGame(game);
         return new ResponseEntity<>(createdGame, HttpStatus.CREATED);
     }
 
@@ -60,16 +62,16 @@ public class GameController {
     // Atualizar um jogo (somente ADMIN pode editar)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<Game> updateGame(@PathVariable String id, @RequestBody Game gameDetails) {
-        Game updatedGame = gameService.updateGame(id, gameDetails);
+    public ResponseEntity<GameDTO> updateGame(@PathVariable String id, @RequestBody Game gameDetails) {
+        GameDTO updatedGame = gameService.updateGame(id, gameDetails);
         return new ResponseEntity<>(updatedGame, HttpStatus.OK);
     }
 
     // Endpoint para buscar um jogo pelo ID
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{id}")
-    public ResponseEntity<Game> getGameById(@PathVariable String id) {
-        Game game = gameService.getGameById(id);
+    public ResponseEntity<GameDTO> getGameById(@PathVariable String id) {
+        GameDTO game = gameService.getGameById(id);
         if (game != null) {
             return ResponseEntity.ok(game);
         } else {
@@ -85,7 +87,7 @@ public class GameController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/{gameId}/draw")
-    public ResponseEntity<Game> drawNumber(@PathVariable String gameId) {
+    public ResponseEntity<GameDTO> drawNumber(@PathVariable String gameId) {
         return ResponseEntity.ok(gameService.addDrawnNumber(gameId));
     }
 
@@ -119,5 +121,11 @@ public class GameController {
     public ResponseEntity<List<GameAudit>> auditGame(
             @PathVariable String gameId) {
         return ResponseEntity.ok(gameService.getAudits(gameId));
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("/{gameId}/ranking")
+    public ResponseEntity<List<RankingDTO>> getRanking(@PathVariable String gameId) {
+        return ResponseEntity.ok(gameService.getRanking(gameId));
     }
 }
