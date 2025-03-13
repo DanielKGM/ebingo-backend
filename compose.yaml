@@ -44,6 +44,9 @@ services:
         condition: service_healthy
     networks:
       - ebingo-net
+    volumes:
+      - .:/app
+      - /app/target
 
   # Serviço do frontend (Angular)
   frontend:
@@ -57,6 +60,12 @@ services:
       - api
     networks:
       - ebingo-net
+    volumes:
+      - ../ebingo-frontend:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
 
 networks:
   ebingo-net:
