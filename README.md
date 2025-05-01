@@ -3,35 +3,53 @@
 <a id="readme-top"></a>
 # Sobre o projeto
 ## Objetivo
-**eBingo** é o que acredito ser o mínimo produto viável para um <i>website</i> de bingo interativo, onde usuários podem participar de partidas <u>online</u> e em tempo real.
+**eBingo** é o que acredito ser o mínimo produto viável para um <i>website</i> de bingo interativo, onde usuários podem participar de partidas <i>online</i> e em tempo real. Este repositório contem a <i>API</i> do projeto responsável por receber requisições dos usuários para processamento de jogos de forma segura e escalável.
 ## Fluxo Geral
 O usuário poderá criar sua conta, autenticar-se, procurar por partidas disponíveis, entrar em salas de jogo, gerar sua cartela e competir ou acompanhar o jogo em tempo real, desde que haja um administrador para orquestrar a partida. Adicionalmente, poderá ganhar **prêmios** (textos secretos disponíveis em cada sala de jogo) e conferir o seu perfil.
+
+## Funcionalidades
+- [X] Autenticação e registro de usuários;
+- [X] Jogador pode visualizar e editar seu perfil;
+- [X] Diferentes Permissões entre usuários comuns e administradores;
+- [X] Gerenciamento e criação de jogos pelos administradores;
+- [X] Usuários visualizar uma lista de jogos e entrar neles;
+- [X] Vencedor de cada jogo tem acesso a um texto exclusivo;
+- [X] Sistema exige autenticação para resgatar o prêmio;
+- [X] Gerar cartelas de bingo automaticamente para cada jogador;
+- [X] Cada jogo terá um ranking em tempo real;
+- [X] Sorteio de números pelos administradores e exibição dos resultados para todos os participantes em tempo real;
+- [X] O sistema valida automaticamente quando uma cartela completa a sequência vencedora;
+- [X] Preenchimento manual e obrigatório das cartelas.
+- [X] Filtro por nome e/ou por status na listagem de jogos;
+- [X] Usuários podem visualizar a sala sem entrar no jogo;
+- [X] Auditoria e histórico do jogo;
+- [X] Criptografia de senha e proteção de endpoints.
 <p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
 
 # Tecnologias Utilizadas
 ## Java
 |  | Nome | Versão |
 |:---:|:---:|---|
-|      <img height="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/java.png">      |      Java       | `h`           |
-|  <img height="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/spring_boot.png">   |   Spring Boot   | `h`    |
-|     <img height="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/maven.png">      |      Maven      | `h`          |
-|     <img height="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/lombok.png">     |     Lombok      | `h`         |
+|      <img height="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/java.png">      |      Java       | `21`           |
+|  <img height="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/spring_boot.png">   |   Spring Boot   | `-`    |
+|     <img height="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/maven.png">      |      Maven      | `3.9.9`          |
+|     <img height="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/lombok.png">     |     Lombok      | `-`         |
 
 ## Comunicação
-|  | Nome | Versão |
-|:---:|:---:|---|
-| <img height="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/websocket.png"> | websocket | `h` |
-| <img height="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/rest.png"> | REST | `h` |
+|  | Nome |
+|:---:|:---:|
+| <img height="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/websocket.png"> | websocket |
+| <img height="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/rest.png"> | REST |
 
 ## Banco de Dados
 |  | Nome | Versão |
 |:---:|:---:|---|
-| <img height="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/mysql.png"> | MySQL | `h` |
+| <img height="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/mysql.png"> | MySQL | `8` |
 
 ## DevOps
-|  | Nome | Versão |
-|:---:|:---:|---|
-| <img height="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/docker.png"> | Docker | `h` |
+|  | Nome |
+|:---:|:---:|
+| <img height="50" src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/docker.png"> | Docker |
 <p align="right">(<a href="https://github.com/DanielKGM/ebingo-backend/blob/main/pom.xml">pom.xml</a>) (<a href="#readme-top">voltar ao topo</a>)</p>
 
 # Execução do Projeto em Contâiner
@@ -129,3 +147,6 @@ erDiagram
 ```
 <p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
 
+# Contribuições
+## Recursos a Serem Implementados
+🔒
