@@ -2,18 +2,19 @@
 
 <a id="readme-top"></a>
 
-<center>
-<img src="assets/logo.png" width="50%" alt="eBingo logo">
-<p><strong>PARTIDAS DE BINGO ONLINE</strong></p>
-</center>
+<div align="center">
+<img src="assets/logo.png" alt="eBingo logo" width="50%" align="center"><br/><br/>
+<p align="center"><strong>PARTIDAS DE BINGO ONLINE</strong></p></div>
 
-**eBingo** é o mínimo produto viável para um <i>website</i> de bingo interativo, onde usuários podem participar de partidas <i>online</i> e em tempo real. Este repositório contem a <i>API</i> do projeto, responsável por receber requisições dos usuários para processamento de jogos de forma segura e escalável.
+<p align="justify"><strong>eBingo</strong> é o mínimo produto viável para um <i>website</i> de bingo interativo, onde usuários podem participar de partidas <i>online</i> e em tempo real. Este repositório contém o <i>front-end</i> do projeto.</p> 
 
 ## Fluxo Geral
 
-O usuário poderá criar sua conta, autenticar-se, procurar por partidas disponíveis, entrar em salas de jogo, gerar sua cartela e competir ou acompanhar o jogo em tempo real, desde que haja um administrador para orquestrar a partida. Adicionalmente, poderá ganhar **prêmios** (textos secretos disponíveis em cada sala de jogo) e conferir o seu perfil.
+<p align="justify">O usuário poderá criar sua conta, autenticar-se e procurar por partidas disponíveis. Ao entrar na partida, procede por gerar sua cartela e competir contra outros jogadores, ou acompanhar o jogo em tempo real. Por enquanto, é necessário um administrador para orquestrar as partidas.</p>
 
-## Funcionalidades
+<p align="justify">Adicionalmente, o usuário poderá ganhar <strong>prêmios</strong> (em formato de texto) e conferir o seu perfil.</p>
+
+## Funcionalidades Backend
 
 - [x] Autenticação e registro de usuários;
 - [x] Jogador pode visualizar e editar seu perfil;
@@ -95,7 +96,7 @@ docker-compose up --build
 
 # Persistência de Dados
 
-O **MySQL 8** é instalado em um container através dos passos anteriores. Tabelas, restrições e relacionamentos são gerados programaticamente pelo Spring Data JPA, conforme os [modelos](https://github.com/DanielKGM/ebingo-backend/tree/main/src/main/java/br/danielkgm/ebingo/model) do projeto. O resultado pode ser representado pelo diagrama ER a seguir:
+<p align="justify">O **MySQL 8** é instalado em um container através dos passos anteriores. Tabelas, restrições e relacionamentos são gerados programaticamente pelo Spring Data JPA, conforme os <a href="src/main/java/br/danielkgm/ebingo/model">modelos</a> do projeto. O resultado pode ser representado pelo diagrama ER a seguir:</p>
 
 ```mermaid
 ---
@@ -170,9 +171,3 @@ erDiagram
 ```
 
 <p align="right">(<a href="#readme-top">voltar ao topo</a>)</p>
-
-# Contribuições
-
-## Recursos a Serem Implementados
-
-🔒
