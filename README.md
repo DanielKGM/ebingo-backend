@@ -65,7 +65,7 @@ O usuário poderá criar sua conta, autenticar-se, procurar por partidas dispon�
 
 <p align="right">(<a href="https://github.com/DanielKGM/ebingo-backend/blob/main/pom.xml">pom.xml</a>) (<a href="#readme-top">voltar ao topo</a>)</p>
 
-# Execução do Projeto em Contâiner
+# Execução do Projeto em Contêiner
 
 ## Requisitos
 
