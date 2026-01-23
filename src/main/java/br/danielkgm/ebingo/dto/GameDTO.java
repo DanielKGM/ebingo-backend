@@ -15,7 +15,8 @@ public record GameDTO(
         List<Integer> drawnNumbers,
         GameStatus status,
         UserDTO winner,
-        Integer cardSize) {
+        Integer cardSize,
+        String prize) {
 
     public static GameDTO fromModel(Game game) {
         if (game == null) {
@@ -31,6 +32,7 @@ public record GameDTO(
                 game.getDrawnNumbers(),
                 game.getStatus(),
                 UserDTO.fromModel(game.getWinner()),
-                game.getCardSize());
+                game.getCardSize(),
+                game.getPrize());
     }
 }

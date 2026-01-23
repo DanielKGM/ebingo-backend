@@ -89,12 +89,17 @@ public class GameService {
 
     }
 
-    public GameDTO updateGame(String id, Game gameDetails) {
+    public GameDTO updateGame(String id, Game gameDetails, String userId) {
         Game game = gameRepository.findById(id).orElseThrow(() -> new RuntimeException("Jogo não encontrado"));
+        var isCreator = game.getCreatedBy() != null && game.getCreatedBy().equals(userId);
+
+        if (isCreator) {
+            game.setPrize(gameDetails.getPrize());
+        }
+
         game.setRoomName(gameDetails.getRoomName());
         game.setStartTime(gameDetails.getStartTime());
         game.setEndTime(gameDetails.getEndTime());
-        game.setPrize(gameDetails.getPrize());
         game.setManualFill(gameDetails.isManualFill());
         game.setStatus(gameDetails.getStatus());
         game.setCardSize(gameDetails.getCardSize());
@@ -224,6 +229,12 @@ public class GameService {
     public String getPrize(String gameId, String userId) {
         Game game = gameRepository.findById(gameId).orElseThrow(() -> new RuntimeException("Jogo não encontrado"));
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        var isCreator = game.getCreatedBy() != null && game.getCreatedBy().equals(userId);
+
+        if (isCreator) {
+            return game.getPrize();
+        }
 
         if (game.getWinner() == null) {
             return "O jogo ainda não tem um vencedor.";

@@ -63,7 +63,9 @@ public class GameController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<GameDTO> updateGame(@PathVariable String id, @RequestBody Game gameDetails) {
-        GameDTO updatedGame = gameService.updateGame(id, gameDetails);
+        User u = authService.getUser();
+        String userId = u != null ? u.getId() : null;
+        GameDTO updatedGame = gameService.updateGame(id, gameDetails, userId);
         return new ResponseEntity<>(updatedGame, HttpStatus.OK);
     }
 
