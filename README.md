@@ -2,16 +2,12 @@
 
 <a id="readme-top"></a>
 
-# Sobre o projeto
-
 <center>
-<img src="https://i.imgur.com/elXjEnE.png" alt="eBingo logo">
+<img src="assets/logo.png" width="50%" alt="eBingo logo">
 <p><strong>PARTIDAS DE BINGO ONLINE</strong></p>
 </center>
 
-## Objetivo
-
-**eBingo** é o que acredito ser o mínimo produto viável para um <i>website</i> de bingo interativo, onde usuários podem participar de partidas <i>online</i> e em tempo real. Este repositório contem a <i>API</i> do projeto responsável por receber requisições dos usuários para processamento de jogos de forma segura e escalável.
+**eBingo** é o mínimo produto viável para um <i>website</i> de bingo interativo, onde usuários podem participar de partidas <i>online</i> e em tempo real. Este repositório contem a <i>API</i> do projeto, responsável por receber requisições dos usuários para processamento de jogos de forma segura e escalável.
 
 ## Fluxo Geral
 
