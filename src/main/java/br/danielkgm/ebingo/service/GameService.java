@@ -237,11 +237,11 @@ public class GameService {
         }
 
         if (game.getWinner() == null) {
-            return "O jogo ainda não tem um vencedor.";
+            return null;
         }
 
         if (!game.getWinner().equals(user)) {
-            return "Você não é o vencedor deste jogo!";
+            return null;
         }
 
         this.auditService.createGameAudit(game, GameAction.PRIZE_VIEWED);
