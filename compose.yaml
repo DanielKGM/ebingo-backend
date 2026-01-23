@@ -9,10 +9,10 @@ services:
     ports:
       - "3306:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=sql
-      - MYSQL_DATABASE=sql
-      - MYSQL_USER=sql
-      - MYSQL_PASSWORD=sql
+      - MYSQL_ROOT_PASSWORD=ebingo
+      - MYSQL_DATABASE=ebingo
+      - MYSQL_USER=ebingo
+      - MYSQL_PASSWORD=ebingo
       - TZ=America/Sao_Paulo
     volumes:
       - "./conf.d:/etc/mysql/conf.d:ro"
