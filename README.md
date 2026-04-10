@@ -96,7 +96,7 @@ docker-compose up --build
 
 # Persistência de Dados
 
-<p align="justify">O **MySQL 8** é instalado em um container através dos passos anteriores. Tabelas, restrições e relacionamentos são gerados programaticamente pelo Spring Data JPA, conforme os <a href="src/main/java/br/danielkgm/ebingo/model">modelos</a> do projeto. O resultado pode ser representado pelo diagrama ER a seguir:</p>
+<p align="justify">O <b>MySQL 8</b> é instalado em um container através dos passos anteriores. Tabelas, restrições e relacionamentos são gerados programaticamente pelo Spring Data JPA, conforme os <a href="src/main/java/br/danielkgm/ebingo/model">modelos</a> do projeto. O resultado pode ser representado pelo diagrama ER a seguir:</p>
 
 ```mermaid
 ---
